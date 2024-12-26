@@ -1,4 +1,4 @@
-import { doSignOut } from "../firebase/auth";
+import { auth } from "../firebase/firebase";
 import { useNavigate, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -7,11 +7,11 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
 
   const handleSignOut = async () => {
     try {
-      await doSignOut(); // Call signOut function from context
-      navigate("/login"); // Redirect to home page after signout
+      await auth.signOut().then(() => navigate("/login")); // Sign out and navigate
+      // Optional: Any other cleanup or state updates you need to do after sign out
     } catch (error) {
       console.error("Error signing out:", error);
-      // Handle errors (optional: show error message to user)
+      // Handle sign-out errors (e.g., display an error message to the user)
     }
   };
 
