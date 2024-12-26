@@ -1,6 +1,20 @@
-import { Link } from "react-router-dom";
+import { doSignOut } from "../firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const UserMenu = ({ isDropdownOpen, toggleDropdown }) => {
+const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
+  const navigate = useNavigate(); // Use useNavigate hook
+
+  const handleSignOut = async () => {
+    try {
+      await doSignOut(); // Call signOut function from context
+      navigate("/login"); // Redirect to home page after signout
+    } catch (error) {
+      console.error("Error signing out:", error);
+      // Handle errors (optional: show error message to user)
+    }
+  };
+
   return (
     <div className="relative">
       <button
@@ -26,7 +40,7 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown }) => {
           <div className="px-4 py-3">
             <span className="block text-sm">Bonnie Green</span>
             <span className="block text-xs text-gray-500 truncate">
-              name@flowbite.com
+              {user.email}
             </span>
           </div>
           <ul className="py-2">
@@ -55,18 +69,31 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown }) => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/signout"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+              <button
+                className="block px-4 py-2 text-sm text-red-500 hover:bg-red-100 dark:hover:bg-red-600"
+                onClick={handleSignOut}
               >
                 Sign out
-              </Link>
+              </button>
             </li>
           </ul>
         </div>
       )}
     </div>
   );
+};
+UserMenu.propTypes = {
+  isDropdownOpen: PropTypes.bool.isRequired,
+  toggleDropdown: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    // Define the shape of the user object
+    uid: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    displayName: PropTypes.string, // displayName is optional
+    // Add other user properties as needed (e.g., photoURL)
+    photoURL: PropTypes.string,
+    emailVerified: PropTypes.bool,
+  }).isRequired,
 };
 
 export default UserMenu;

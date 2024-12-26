@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { FaMoneyBillAlt } from "react-icons/fa";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase/firebase";
 import UserMenu from "./UserMenu";
 import NavbarLinks from "./NavbarLinks";
 import MobileMenuToggle from "./MobileMenuToggle";
+import { FaMoneyBillAlt } from "react-icons/fa";
+import { Link } from "react-router-dom"; // Import Link
 
 const Navbar = () => {
+  const [user, loading, error] = useAuthState(auth);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -21,25 +25,37 @@ const Navbar = () => {
             Budget
           </span>
         </div>
-
         {/* Navbar Links for Desktop */}
-        <NavbarLinks />
-
-        {/* User Menu and Mobile Menu Toggle */}
+        {user && <NavbarLinks />}
+        {/* User Menu / Sign In Button */}
         <div className="flex items-center space-x-4">
-          <UserMenu
-            isDropdownOpen={isDropdownOpen}
-            toggleDropdown={toggleDropdown}
-          />
-          <MobileMenuToggle
-            isMobileMenuOpen={isMobileMenuOpen}
-            toggleMobileMenu={toggleMobileMenu}
-          />
+          {loading ? (
+            <div>Loading...</div> // Show loading indicator
+          ) : error ? (
+            <div>Error: {error.message}</div> // Show error message
+          ) : user ? (
+            <UserMenu
+              isDropdownOpen={isDropdownOpen}
+              toggleDropdown={toggleDropdown}
+              user={user} // Pass the user prop
+            />
+          ) : (
+            <Link to="/login" className="text-blue-500 hover:text-blue-700">
+              Sign In
+            </Link>
+          )}
+
+          {user && (
+            <MobileMenuToggle
+              isMobileMenuOpen={isMobileMenuOpen}
+              toggleMobileMenu={toggleMobileMenu}
+            />
+          )}
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && <NavbarLinks isMobile />}
+      {user && isMobileMenuOpen && <NavbarLinks isMobile />}
     </nav>
   );
 };

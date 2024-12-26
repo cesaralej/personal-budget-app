@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebaseConfig"; // Adjust path if necessary
+import { db } from "../firebase/firebase"; // Adjust path if necessary
 import { collection, onSnapshot } from "firebase/firestore";
 import TransactionItem from "./TransactionItem";
 

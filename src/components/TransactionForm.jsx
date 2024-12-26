@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { db } from "../firebaseConfig"; // Adjust path if necessary
+import { useState } from "react";
+import { db } from "../firebase/firebase"; // Adjust path if necessary
 import { collection, addDoc } from "firebase/firestore";
 
 const typeOptions = ["income", "expense"];
@@ -52,6 +52,11 @@ const TransactionForm = () => {
 
     if (!formData.amount || !formData.category || !formData.date) {
       alert("Please fill out all fields.");
+      return;
+    }
+
+    if (isNaN(parseFloat(formData.amount)) || formData.amount.trim() === "") {
+      alert("Please enter a valid amount.");
       return;
     }
 

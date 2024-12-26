@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { db } from "../firebaseConfig";
+import { useEffect, useState } from "react";
+import { db } from "../firebase/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import {
   FaMoneyBillAlt,
