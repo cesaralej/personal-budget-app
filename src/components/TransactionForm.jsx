@@ -13,11 +13,11 @@ const categoryOptions = {
   expense: [
     "groceries",
     "utilities",
-    "lunch",
+    "food",
+    "fun",
     "luxury",
     "investment",
-    "maid",
-    "taxi",
+    "transportation",
     "other",
   ],
 };
@@ -51,7 +51,17 @@ const TransactionForm = ({ onSubmit }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    setFormData((prevData) => {
+      return {
+        ...prevData,
+        [name]: value,
+        account:
+          name === "type" && value === "income" ? "savings" : prevData.account,
+        category:
+          name === "type" ? categoryOptions[value][0] : prevData.category,
+      };
+    });
   };
 
   const handleCheckboxChange = () => {
