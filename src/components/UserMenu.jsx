@@ -73,7 +73,7 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
             <li>
               <Link
                 to="/"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
                 onClick={handleLinkClick}
               >
                 Dashboard
@@ -82,7 +82,7 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
             <li>
               <Link
                 to="/settings"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
                 onClick={handleLinkClick}
               >
                 Settings
@@ -90,7 +90,7 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
             </li>
             <li>
               <button
-                className="block px-4 py-2 text-sm text-red-500 hover:bg-red-100 dark:hover:bg-red-600  w-full text-left"
+                className="block px-4 py-2 text-sm text-red-500 hover:bg-red-100 dark:hover:bg-red-600 dark:hover:text-white  w-full text-left"
                 onClick={handleSignOut}
               >
                 Sign out
