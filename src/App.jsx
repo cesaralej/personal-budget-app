@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase/firebase";
+import { TransactionProvider } from "./context/TransactionContext";
 import MainLayout from "./layouts/MainLayout";
 import DashboardPage from "./pages/DashboardPage";
 import ExpensesPage from "./pages/ExpensesPage";
@@ -38,7 +39,9 @@ const RequireAuth = ({ children }) => {
 const ProtectedLayout = () => {
   return (
     <RequireAuth>
-      <Outlet />
+      <TransactionProvider>
+        <Outlet />
+      </TransactionProvider>
     </RequireAuth>
   );
 };

@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "../firebase/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import PropTypes from "prop-types";
 
 const typeOptions = ["income", "expense"];
 
@@ -24,39 +22,7 @@ const categoryOptions = {
   ],
 };
 
-const TransactionForm = () => {
-  const [user, loading, error] = useAuthState(auth);
-
-  const addTransaction = async (transactionData) => {
-    if (!user) {
-      console.error("User not logged in. Cannot add transaction.");
-      // Optionally: Display a message to the user or redirect them to login
-      return;
-    }
-
-    try {
-      const transactionsCollectionRef = collection(
-        db,
-        "users",
-        user.uid, // This is crucial: Use the user's UID
-        "transactions"
-      );
-
-      const combinedDateTime = new Date(
-        `${transactionData.date}T${transactionData.time}`
-      );
-
-      const docRef = await addDoc(transactionsCollectionRef, {
-        ...transactionData,
-        date: combinedDateTime,
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (error) {
-      console.error("Error adding transaction:", error);
-      // Optionally: Display an error message to the user
-    }
-  };
-
+const TransactionForm = ({ onSubmit }) => {
   const getTodayDate = () => {
     const today = new Date();
     return today.toISOString().split("T")[0];
@@ -112,7 +78,7 @@ const TransactionForm = () => {
     }
 
     try {
-      await addTransaction(formData);
+      await onSubmit(formData);
       alert("Transaction added!");
       setFormData({
         amount: "",
@@ -316,6 +282,10 @@ const TransactionForm = () => {
       </button>
     </form>
   );
+};
+
+TransactionForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default TransactionForm;

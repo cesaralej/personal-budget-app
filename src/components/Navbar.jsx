@@ -55,7 +55,9 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu */}
-      {user && isMobileMenuOpen && <NavbarLinks isMobile />}
+      {user && isMobileMenuOpen && (
+        <NavbarLinks isMobile onCloseMobileMenu={toggleMobileMenu} />
+      )}
     </nav>
   );
 };

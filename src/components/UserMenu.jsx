@@ -1,19 +1,40 @@
+import { useEffect, useRef } from "react";
 import { auth } from "../firebase/firebase";
 import { useNavigate, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
   const navigate = useNavigate(); // Use useNavigate hook
+  const dropdownRef = useRef(null); // Create a ref
 
   const handleSignOut = async () => {
     try {
-      await auth.signOut().then(() => navigate("/login")); // Sign out and navigate
-      // Optional: Any other cleanup or state updates you need to do after sign out
+      await auth.signOut().then(() => navigate("/login"));
+      toggleDropdown();
     } catch (error) {
       console.error("Error signing out:", error);
-      // Handle sign-out errors (e.g., display an error message to the user)
     }
   };
+
+  const handleLinkClick = () => {
+    toggleDropdown(); // Close the dropdown when a link is clicked
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        toggleDropdown();
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen, toggleDropdown]); // Add toggleDropdown to dependency array
 
   return (
     <div className="relative">
@@ -36,9 +57,14 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
       </button>
 
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg shadow-lg z-50">
+        <div
+          className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg shadow-lg z-50"
+          ref={dropdownRef}
+        >
           <div className="px-4 py-3">
-            <span className="block text-sm">Bonnie Green</span>
+            <span className="block text-sm">
+              {user.displayName || user.email}
+            </span>
             <span className="block text-xs text-gray-500 truncate">
               {user.email}
             </span>
@@ -46,8 +72,9 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
           <ul className="py-2">
             <li>
               <Link
-                to="/dashboard"
+                to="/"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                onClick={handleLinkClick}
               >
                 Dashboard
               </Link>
@@ -56,21 +83,14 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
               <Link
                 to="/settings"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                onClick={handleLinkClick}
               >
                 Settings
               </Link>
             </li>
             <li>
-              <Link
-                to="/earnings"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
-              >
-                Earnings
-              </Link>
-            </li>
-            <li>
               <button
-                className="block px-4 py-2 text-sm text-red-500 hover:bg-red-100 dark:hover:bg-red-600"
+                className="block px-4 py-2 text-sm text-red-500 hover:bg-red-100 dark:hover:bg-red-600  w-full text-left"
                 onClick={handleSignOut}
               >
                 Sign out
@@ -82,6 +102,7 @@ const UserMenu = ({ isDropdownOpen, toggleDropdown, user }) => {
     </div>
   );
 };
+
 UserMenu.propTypes = {
   isDropdownOpen: PropTypes.bool.isRequired,
   toggleDropdown: PropTypes.func.isRequired,

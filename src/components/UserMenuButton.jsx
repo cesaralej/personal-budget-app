@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 const UserMenuButton = ({ onClick }) => {
   return (
     <button
@@ -22,6 +24,9 @@ const UserMenuButton = ({ onClick }) => {
       </svg>
     </button>
   );
+};
+UserMenuButton.propTypes = {
+  onClick: PropTypes.func.isRequired,
 };
 
 export default UserMenuButton;

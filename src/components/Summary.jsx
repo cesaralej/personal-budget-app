@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
 import {
   FaMoneyBillAlt,
   FaArrowDown,
@@ -8,8 +6,9 @@ import {
   FaWallet,
   FaCreditCard,
 } from "react-icons/fa";
+import PropTypes from "prop-types";
 
-const Summary = () => {
+const Summary = ({ transactions }) => {
   const [summary, setSummary] = useState({
     totalIncome: 0,
     totalExpenses: 0,
@@ -20,48 +19,40 @@ const Summary = () => {
 
   useEffect(
     () => {
-      console.log("Fetching transactions...");
-      const unsubscribe = onSnapshot(
-        collection(db, "transactions"),
-        (snapshot) => {
-          let income = 0;
-          let expenses = 0;
-          let savings = 0;
-          let credit = 0;
+      if (!transactions) return;
 
-          snapshot.docs.forEach((doc) => {
-            const data = doc.data();
-            const amount = parseFloat(data.amount);
+      let income = 0;
+      let expenses = 0;
+      let savings = 0;
+      let credit = 0;
 
-            // Alternatively, you can use a ternary operator
-            if (!data.isCreditCardPayment) {
-              data.type === "income"
-                ? (income += amount)
-                : (expenses += amount);
-              data.account === "savings"
-                ? data.type === "income"
-                  ? (savings += amount)
-                  : (savings -= amount)
-                : (credit += amount);
-            } else {
-              credit -= amount;
-              savings -= amount;
-            }
-          });
+      transactions.forEach((transaction) => {
+        const amount = parseFloat(transaction.amount);
 
-          setSummary({
-            totalIncome: income,
-            totalExpenses: expenses,
-            balance: income - expenses,
-            savings: savings,
-            credit: credit,
-          });
+        if (!transaction.isCreditCardPayment) {
+          transaction.type === "income"
+            ? (income += amount)
+            : (expenses += amount);
+          transaction.account === "savings"
+            ? transaction.type === "income"
+              ? (savings += amount)
+              : (savings -= amount)
+            : (credit += amount);
+        } else {
+          credit -= amount;
+          savings -= amount;
         }
-      );
+      });
 
-      return () => unsubscribe(); // Cleanup on unmount
+      setSummary({
+        totalIncome: income,
+        totalExpenses: expenses,
+        balance: income - expenses,
+        savings: savings,
+        credit: credit,
+      });
     },
-    [] // Add summary as a dependency
+    [transactions] // Dependency on transactions prop
   );
 
   return (
@@ -141,6 +132,11 @@ const Summary = () => {
       </div>
     </div>
   );
+};
+Summary.propTypes = {
+  transactions: PropTypes.array.isRequired,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
 };
 
 export default Summary;

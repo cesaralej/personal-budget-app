@@ -29,7 +29,6 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (user || googleUser) {
-      console.log(user);
       navigate("/"); // Redirect to home if user is already logged in
     }
   }, [user, googleUser, navigate]);

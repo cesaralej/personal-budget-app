@@ -1,9 +1,19 @@
 import { useState } from "react";
+import { useTransactions } from "../context/TransactionContext";
 import TransactionForm from "../components/TransactionForm";
 import TransactionList from "../components/TransactionList";
 
 const ExpensesPage = () => {
+  const {
+    transactions,
+    loading,
+    error,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+  } = useTransactions();
   const [showForm, setShowForm] = useState(false);
+
   return (
     <>
       <div className="container mx-auto px-4 py-8">
@@ -15,8 +25,17 @@ const ExpensesPage = () => {
         </button>
       </div>
 
-      {showForm && <TransactionForm />}
-      <TransactionList />
+      {showForm && <TransactionForm onSubmit={addTransaction} />}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <TransactionList
+          transactions={transactions}
+          onEdit={updateTransaction}
+          onDelete={deleteTransaction}
+          error={error}
+        />
+      )}
     </>
   );
 };
