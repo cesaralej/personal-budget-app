@@ -65,13 +65,26 @@ const TransactionForm = ({ onSubmit }) => {
   };
 
   const handleCheckboxChange = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      type: prevData.type === "income" ? "expense" : "expense",
-      account: prevData.account === "credit" ? "savings" : "savings",
-      category: "other",
-      isCreditCardPayment: !prevData.isCreditCardPayment,
-    }));
+    setFormData((prevData) => {
+      let newDescription = prevData.description;
+
+      if (!prevData.isCreditCardPayment) {
+        // Checkbox is being checked
+        newDescription = "Credit Card"; // Add " - Credit Card" if there's existing text
+      } else {
+        // Checkbox is being unchecked
+        newDescription = newDescription.replace("Credit Card", "").trim(); // Remove " - Credit Card" or "Credit Card"
+      }
+
+      return {
+        ...prevData,
+        type: "expense",
+        account: "savings",
+        category: "other",
+        description: newDescription,
+        isCreditCardPayment: !prevData.isCreditCardPayment,
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -142,7 +155,7 @@ const TransactionForm = ({ onSubmit }) => {
           id="description"
           value={formData.description}
           onChange={handleChange}
-          required={!formData.isCreditCardPayment}
+          disabled={formData.isCreditCardPayment}
           placeholder="e.g., Coffee at Starbucks"
           maxLength="50"
           className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
