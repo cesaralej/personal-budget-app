@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import categories from "../data/categories";
 import PropTypes from "prop-types";
 
 const typeOptions = ["income", "expense"];
@@ -10,16 +11,7 @@ const accountOptions = {
 
 const categoryOptions = {
   income: ["salary", "other"],
-  expense: [
-    "groceries",
-    "utilities",
-    "food",
-    "fun",
-    "luxury",
-    "investment",
-    "transportation",
-    "other",
-  ],
+  expense: Object.keys(categories).filter((category) => category !== "salary"),
 };
 
 const TransactionForm = ({ onSubmit }) => {
@@ -49,19 +41,23 @@ const TransactionForm = ({ onSubmit }) => {
 
   const [showComment, setShowComment] = useState(false);
 
+  useEffect(() => {
+    if (formData.type === "income") {
+      setFormData((prevData) => ({
+        ...prevData,
+        account: "savings",
+        category: "salary",
+      }));
+    }
+  }, [formData.type]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prevData) => {
-      return {
-        ...prevData,
-        [name]: value,
-        account:
-          name === "type" && value === "income" ? "savings" : prevData.account,
-        category:
-          name === "type" ? categoryOptions[value][0] : prevData.category,
-      };
-    });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleCheckboxChange = () => {
@@ -219,9 +215,9 @@ const TransactionForm = ({ onSubmit }) => {
             formData.isCreditCardPayment ? "bg-gray-200 cursor-not-allowed" : ""
           }`}
         >
-          {categoryOptions[formData.type].map((category) => (
-            <option key={category} value={category}>
-              {category.charAt(0).toUpperCase() + category.slice(1)}
+          {categoryOptions[formData.type].map((categoryKey) => (
+            <option key={categoryKey} value={categoryKey}>
+              {categories[categoryKey].name}
             </option>
           ))}
         </select>

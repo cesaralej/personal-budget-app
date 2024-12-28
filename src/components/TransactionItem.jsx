@@ -1,43 +1,8 @@
 import { useState } from "react";
+import categories from "../data/categories.jsx";
 import { HiPlusSm, HiMinusSm, HiPencil, HiTrash } from "react-icons/hi";
-import {
-  FaShoppingCart,
-  FaHome,
-  FaLightbulb,
-  FaTaxi,
-  FaCreditCard,
-  FaWallet,
-  FaCoins,
-} from "react-icons/fa";
-import { FaSackDollar } from "react-icons/fa6";
-import { IoSparkles } from "react-icons/io5";
-import { MdRestaurant } from "react-icons/md";
-import { GiPartyPopper } from "react-icons/gi";
+import { FaCreditCard, FaWallet, FaCoins } from "react-icons/fa";
 import PropTypes from "prop-types";
-
-const categoryIcons = {
-  groceries: <FaShoppingCart />,
-  utilities: <FaLightbulb />,
-  food: <MdRestaurant />,
-  luxury: <IoSparkles />,
-  investment: <FaHome />,
-  transportation: <FaTaxi />,
-  other: <FaCoins />,
-  salary: <FaSackDollar />,
-  fun: <GiPartyPopper />,
-};
-
-const categoryColors = {
-  groceries: "bg-green-100", // Very light red
-  utilities: "bg-blue-100", // Very light blue
-  food: "bg-orange-100", // Very light yellow
-  luxury: "bg-purple-100", // Very light purple
-  investment: "bg-red-100", // Very light green
-  transportation: "bg-yellow-100", // Very light orange
-  other: "bg-indigo-100", // Very light indigo
-  salary: "bg-green-100",
-  fun: "bg-red-100",
-};
 
 const TransactionItem = ({ transaction, onEdit, onDelete }) => {
   const [isHovering, setIsHovering] = useState(false);
@@ -61,9 +26,11 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
     return text;
   };
 
-  const categoryIcon = categoryIcons[transaction.category] || <FaCoins />;
+  const category = categories[transaction.category];
+  //These placeholders dont work because it breaks when no category is found
+  const categoryIcon = category.icon || <FaCoins />;
+  const categoryColor = category.color || "bg-gray-50"; // Default light gray
 
-  const categoryColor = categoryColors[transaction.category] || "bg-gray-50"; // Default light gray
   const accountIcon =
     transaction.account === "savings" ? <FaWallet /> : <FaCreditCard />;
 
@@ -74,7 +41,7 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
       ? `bg-green-50/10 border-green-500/30 border-2 hover:bg-green-50`
       : transaction.isCreditCardPayment
       ? `bg-purple-50/10 border-purple-500/30 border-2 hover:bg-purple-50`
-      : `bg-white hover:bg-gray-50 hover:border-gray-300`; // Merged conditional card style
+      : `bg-white hover:bg-gray-50 hover:border-gray-300`;
 
   return (
     <div
@@ -101,7 +68,6 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
                     transaction.account.slice(1)}
                 </span>
               </div>
-              {/* Make description block level */}
             </div>
             <div className="flex flex-col items-end">
               <div className="flex items-center">
