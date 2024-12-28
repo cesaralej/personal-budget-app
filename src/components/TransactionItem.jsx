@@ -5,10 +5,11 @@ import {
   FaHome,
   FaLightbulb,
   FaTaxi,
-  FaMoneyBillWave,
   FaCreditCard,
   FaWallet,
+  FaCoins,
 } from "react-icons/fa";
+import { FaSackDollar } from "react-icons/fa6";
 import { IoSparkles } from "react-icons/io5";
 import { MdRestaurant } from "react-icons/md";
 import { GiPartyPopper } from "react-icons/gi";
@@ -21,21 +22,21 @@ const categoryIcons = {
   luxury: <IoSparkles />,
   investment: <FaHome />,
   transportation: <FaTaxi />,
-  other: <HiPlusSm />,
-  salary: <FaMoneyBillWave />,
+  other: <FaCoins />,
+  salary: <FaSackDollar />,
   fun: <GiPartyPopper />,
 };
 
 const categoryColors = {
-  groceries: "bg-green-50", // Very light red
-  utilities: "bg-blue-50", // Very light blue
-  food: "bg-orange-50", // Very light yellow
-  luxury: "bg-purple-50", // Very light purple
-  investment: "bg-red-50", // Very light green
-  transportation: "bg-yellow-50", // Very light orange
-  other: "bg-indigo-50", // Very light indigo
-  salary: "bg-green-50",
-  fun: "bg-red-50",
+  groceries: "bg-green-100", // Very light red
+  utilities: "bg-blue-100", // Very light blue
+  food: "bg-orange-100", // Very light yellow
+  luxury: "bg-purple-100", // Very light purple
+  investment: "bg-red-100", // Very light green
+  transportation: "bg-yellow-100", // Very light orange
+  other: "bg-indigo-100", // Very light indigo
+  salary: "bg-green-100",
+  fun: "bg-red-100",
 };
 
 const TransactionItem = ({ transaction, onEdit, onDelete }) => {
@@ -60,84 +61,85 @@ const TransactionItem = ({ transaction, onEdit, onDelete }) => {
     return text;
   };
 
-  const formattedDate = transaction.date.toLocaleDateString();
-
-  const categoryIcon = categoryIcons[transaction.category] || <HiPlusSm />;
+  const categoryIcon = categoryIcons[transaction.category] || <FaCoins />;
 
   const categoryColor = categoryColors[transaction.category] || "bg-gray-50"; // Default light gray
   const accountIcon =
     transaction.account === "savings" ? <FaWallet /> : <FaCreditCard />;
 
-  const amountStyle = transaction.type === "income" ? "text-green-500" : ""; // Conditional amount color
+  const amountStyle =
+    transaction.type === "income" ? "text-green-500" : "text-red-500"; // Conditional amount color
   const cardStyle =
     transaction.type === "income"
-      ? `bg-green-50/10 border-green-500/30 border-2`
-      : `bg-white" ${categoryColor}`; // Conditional card style
+      ? `bg-green-50/10 border-green-500/30 border-2 hover:bg-green-50`
+      : transaction.isCreditCardPayment
+      ? `bg-purple-50/10 border-purple-500/30 border-2 hover:bg-purple-50`
+      : `bg-white hover:bg-gray-50 hover:border-gray-300`; // Merged conditional card style
 
   return (
     <div
-      className={`rounded-lg shadow-md p-4 flex flex-col gap-2 ${cardStyle}  hover:shadow-lg hover:border-gray-300 hover:scale-101 transition-all duration-200`}
-      onMouseEnter={() => setIsHovering(true)} // Set hovering state on mouse enter
-      onMouseLeave={() => setIsHovering(false)} // Clear hovering state on mouse leave
+      className={`rounded-lg shadow-md p-4  ${cardStyle} hover:shadow-lg hover:scale-101 transition-all duration-200`}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
-      {" "}
-      <div className="flex justify-between items-start">
-        <div>
-          {" "}
-          {/* Container for date and description/icon */}
-          {/* Date at top left */}
-          <div>
-            <span className="text-gray-500 text-sm mb-1">{formattedDate}</span>
-            <div className="flex items-center gap-2">
-              {transaction.type === "income" ? (
-                <HiPlusSm className="text-green-500 h-5 w-5" />
-              ) : (
-                <HiMinusSm className="text-red-500 h-5 w-5" />
-              )}
-              {categoryIcon} {/* Render the icon here */}
-              <span className="text-lg font-semibold">
+      <div className="flex items-start gap-4">
+        <div
+          className={`w-12 h-12 rounded-full flex items-center justify-center ${categoryColor} shrink-0`}
+        >
+          {categoryIcon}
+        </div>
+        <div className="flex-grow">
+          <div className="flex justify-between items-start">
+            <div>
+              <span className="text-lg font-semibold block">
                 {truncateText(transaction.description, 20)}
-              </span>
+              </span>{" "}
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                {accountIcon}
+                <span>
+                  {transaction.account.charAt(0).toUpperCase() +
+                    transaction.account.slice(1)}
+                </span>
+              </div>
+              {/* Make description block level */}
+            </div>
+            <div className="flex flex-col items-end">
+              <div className="flex items-center">
+                {transaction.type === "income" ? (
+                  <HiPlusSm className="text-green-500 h-5 w-5" />
+                ) : (
+                  <HiMinusSm className="text-red-500 h-5 w-5" />
+                )}
+                <span
+                  className={`text-lg font-semibold ${amountStyle} block text-right`}
+                >
+                  {transaction.amount}€
+                </span>
+              </div>
+              <div className="relative h-6">
+                {isHovering && (
+                  <div className="flex gap-1 absolute top-0 right-0 p-1 rounded-md">
+                    <button
+                      disabled
+                      className="text-gray-400 cursor-not-allowed"
+                    >
+                      <HiPencil className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <HiTrash className="h-5 w-5" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end relative">
-          <div className="relative h-2">
-            {" "}
-            {/* Container for icons */}
-            {isHovering && (
-              <div className="flex gap-1 absolute top-0 right-0 rounded-md">
-                <button disabled className="text-gray-400 cursor-not-allowed">
-                  <HiPencil className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <HiTrash className="h-5 w-5" />
-                </button>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="text-sm text-gray-600"> </span>
-          </div>
-          <span className={`text-lg font-semibold ${amountStyle} mt-2`}>
-            {" "}
-            {/* Amount below icons */}
-            {transaction.amount}€
-          </span>
-        </div>
-      </div>
-      <div className="flex items-center gap-2 text-sm text-gray-600">
-        {accountIcon}
-        <span>
-          {transaction.account.charAt(0).toUpperCase() +
-            transaction.account.slice(1)}
-        </span>
       </div>
       {transaction.comment && (
-        <div className="text-gray-500 text-sm">
+        <div className="text-gray-500 text-sm mt-2 ml-4">
           Comment: {transaction.comment}
         </div>
       )}
@@ -158,6 +160,7 @@ TransactionItem.propTypes = {
       toLocaleDateString: PropTypes.func.isRequired,
     }),
     comment: PropTypes.string,
+    isCreditCardPayment: PropTypes.bool,
   }).isRequired,
 };
 
