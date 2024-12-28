@@ -34,7 +34,7 @@ const TransactionList = ({ transactions, error, onEdit, onDelete }) => {
       <h2 className="text-2xl font-semibold mb-4">Transaction List</h2>
       {Object.entries(groupedTransactions).map(([date, transactionsByDate]) => (
         <div key={date}>
-          <h3 className="text-md text-blue-500 font-semibold mb-2">{date}</h3>
+          <h3 className="text-md text-gray-500 font-semibold mb-2">{date}</h3>
           <div className="flex flex-col gap-4">
             {transactionsByDate.map((transaction) => (
               <TransactionItem
